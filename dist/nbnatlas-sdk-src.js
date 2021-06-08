@@ -38,9 +38,7 @@
     const CONFIG = {
         URL_RECORDS_WS: 'https://records-ws.nbnatlas.org',
         URL_SPECIES_WS: 'https://species-ws.nbnatlas.org',
-        URL_LISTS_WS: 'https://lists.nbnatlas.org',
-        SENSITIVE_IN_WALES_JSON: 'https://cdn.nbnatlas.org/sensitive_species_wales.json',
-        SENSITIVE_IN_ENGLAND_JSON: 'https://cdn.nbnatlas.org/sensitive_species_england.json',
+        URL_LISTS_WS: 'https://lists.nbnatlas.org'
     };
 
     /** 
@@ -95,10 +93,14 @@
      * @memberof NBNAtlas
      * @property {string} BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE
      * @property {string} BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE
+     * @property {string} SENSITIVE_IN_ENGLAND
+     * @property {string} SENSITIVE_IN_WALES
     */
     const SPECIES_LIST = {
         BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE: "dr2504",
-        BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE: "dr2492"
+        BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE: "dr2492",
+        SENSITIVE_IN_ENGLAND: "dr2058",
+        SENSITIVE_IN_WALES: "dr2067"
     };
 
     /**
@@ -335,8 +337,8 @@
             const occurrenceCountDTO = await this.recordsWS.getOccurrenceCountForSpeciesList({layerId:this.layerId, placeName, speciesListId});
          
             if (occurrenceCountDTO) {
-                const sensitiveInWalesDTO = await getJson(CONFIG.SENSITIVE_IN_WALES_JSON);
-                const sensitiveInEnglandDTO = await getJson(CONFIG.SENSITIVE_IN_ENGLAND_JSON);
+                const sensitiveInWalesDTO = await this.listsWS.getSpeciesList(SPECIES_LIST.SENSITIVE_IN_WALES);
+                const sensitiveInEnglandDTO = await this.listsWS.getSpeciesList(SPECIES_LIST.SENSITIVE_IN_ENGLAND);
 
                 result = this._buildOccurrenceCountForSpeciesListResult(speciesListDTO, occurrenceCountDTO, sensitiveInWalesDTO, sensitiveInEnglandDTO);
             }
@@ -445,7 +447,7 @@
          */
         _sensitiveSpeciesJSONToMap(json) {
             return json.reduce((map, obj) => {
-                map[obj.guid] = obj;
+                map[obj.lsid] = obj;
                 return map;
             }, {});
         }
