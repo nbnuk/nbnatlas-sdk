@@ -1,0 +1,10 @@
+/** 
+ * Species List ID's
+ * @memberof NBNAtlas
+ * @property {string} BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE
+ * @property {string} BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE
+*/
+export const SPECIES_LIST = {
+    BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE: "dr2504",
+    BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE: "dr2492"
+}
