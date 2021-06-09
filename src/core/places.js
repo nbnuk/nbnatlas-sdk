@@ -59,8 +59,8 @@ import {CONFIG, SPECIES_LIST} from '../config/index'
         let result = [];
         const occurrenceCountDTO = await this.recordsWS.getOccurrenceCount({layerId:this.layerId, placeName});
         if (occurrenceCountDTO) {
-            const sensitiveInWalesDTO = await getJson(CONFIG.SENSITIVE_IN_WALES_JSON);
-            const sensitiveInEnglandDTO = await getJson(CONFIG.SENSITIVE_IN_ENGLAND_JSON);
+            const sensitiveInWalesDTO = await this.listsWS.getSpeciesList(SPECIES_LIST.SENSITIVE_IN_WALES);
+            const sensitiveInEnglandDTO = await this.listsWS.getSpeciesList(SPECIES_LIST.SENSITIVE_IN_ENGLAND);
 
             result = this._buildOccurrenceCountResult(occurrenceCountDTO, sensitiveInWalesDTO, sensitiveInEnglandDTO);
         }
