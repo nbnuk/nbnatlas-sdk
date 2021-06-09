@@ -1,171 +1,261 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>NBN Atlas JS SDK Demo</title>
+
+    <!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+    <link type="text/css" rel="stylesheet" href="../docs/styles/sunlight.default.css">
+
+    <link type="text/css" rel="stylesheet" href="../docs/styles/site.simplex.css">
+
+    <style>
+        .demo-row {
+            display: flex;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            
+        }
+
+        .demo-col {
+            flex: 50%;
+            overflow-y: auto;
+            padding-left: 1rem;
+        }
+
+
+        pre {
+            margin-bottom: 5px;
+            overflow: auto
+        }
+
+        .warn {
+            color: #c00;
+            font-weight: bold;
+        }
+
+        input[type=text] {
+            width: 350px
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar navbar-default navbar-fixed-top ">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="../index.html">NBN Atlas JS SDK</a>
+                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse" id="topNavigation">
+                <ul class="nav navbar-nav">
+
+                    <li class="dropdown">
+                        <a href="index.html" class="dropdown-toggle" data-toggle="dropdown">Demo<b
+                                class="caret"></b></a>
+                        <ul class="dropdown-menu ">
+                            <li><a href="bbg.html">BBG</a></li>
+                            <li><a href="places.html">Places</a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="container" id="toc-content">
+        <div class="row">
+
+
+            <div>
+
+                <div id="main">
+
+                    <div class="demo-row">
+                        <div class="demo-col">
+                            <h3>Method</h3>
+                            <p>NBNAtlas.places(${layerId}).getOccurrenceCountForSpeciesList( ${placeName},
+                                ${speciesListId} )</p>
+                         
+
+                            <h3>Test</h3>
+                            Place Name <input type="text" id="place1" value="Croydon Cemetery" /> <input type="button"
+                                onclick="getOccurrenceCountForSpeciesList()" value="Go" />
+
+                            <h3>Example Code</h3>
+
+                            
+
+                            <pre><code>
+&lt;script src="https://cdn.nbnatlas.org/sdk/dist/nbnatlas-sdk.js"&gt;&lt;/script&gt;
+                
+NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
+.getOccurrenceCount("Old Windsor: St Peter & St Andrew")
+.then(data=> 
+    console.log(JSON.stringify(data)) 
+)
+                </code>
+                </pre>
+                <a href="../docs/NBNAtlas.places.html">SDK Documentation</a>
+
+                        </div>
+                        <div class="demo-col" id="result1">
+
+                        </div>
+                    </div>
+
+                    <div class="demo-row" style="background-color: floralwhite; border-top:1px solid black;">
+                        <div class="demo-col">
+                            <h3>Method</h3>
+                            <p>NBNAtlas.places(${layerId}.getSpeciesCountByGroup( ${placeName}, ${speciesListId} )</p>
+                           
+
+                            <h3>Test:</h3>
+                            Place Name <input type="text" id="place2" value="Abbots Leigh: Holy Trinity" /> <input
+                                type="button" onclick="getSpeciesCountByGroup()" value="Go" />
+
+                            <h3>Example Code: </h3>
+
+                           
+                            <pre><code>
+&lt;script src="https://cdn.nbnatlas.org/sdk/dist/nbnatlas-sdk.js"&gt;&lt;/script&gt;
+                    
+NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
+.getSpeciesCountByGroup("Croydon Cemetery")
+.then(data=> 
+    console.log(JSON.stringify(data)) 
+)
+                    </code></pre>
+                    <a href="../docs/NBNAtlas.places.html">SDK Documentation</a>
+
+                        </div>
+                        <div class="demo-col" id="result2">
+
+                        </div>
+                    </div>
+
+                    <div class="demo-row">
+                        <div class="demo-col">
+                            <h3>Method</h3>
+                            <p>NBNAtlas.places(${layerId}).getOccurrenceCount( ${placeName} )</p>
+                            
+
+                            <h3>Test:</h3>
+                            Place Name <input type="text" id="place3" value="Croydon Cemetery" /> <input type="button"
+                                onclick="getOccurrenceCount()" value="Go" />
+
+                            <h3>Example Code:</h3>
+
+                            
+
+                            <pre><code>
+&lt;script src="https://cdn.nbnatlas.org/sdk/dist/nbnatlas-sdk.js"&gt;&lt;/script&gt;
+                    
+NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
+.getOccurrenceCount("Old Windsor: St Peter & St Andrew")
+.then(data=> 
+    console.log(JSON.stringify(data)) 
+)
+                    </code>
+                    </pre>
+                    <a href="../docs/NBNAtlas.places.html">SDK Documentation</a>
+                        </div>
+                        <div class="demo-col" id="result3">
+
+                        </div>
+                    </div>
+
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <footer>
+
+
+    </footer>
+    <script src="../docs/scripts/docstrap.lib.js"></script>
+    <script src="../docs/scripts/toc.js"></script>
+
     <script src="../dist/nbnatlas-sdk.js"></script>
     <script>
 
         function getOccurrenceCountForSpeciesList() {
             _start(1);
             NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getOccurrenceCountForSpeciesList(_getPlaceName(1), NBNAtlas.SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE)
-            .then((data) => {
-                _handleSuccess(1, data)
-            })
-            .catch(e =>{
-                _handleError(1,e)
-            })
-          
+                .then((data) => {
+                    _handleSuccess(1, data)
+                })
+                .catch(e => {
+                    _handleError(1, e)
+                })
+
         }
 
-        function getSpeciesCountByGroup() {  
-            _start(2);  
+        function getSpeciesCountByGroup() {
+            _start(2);
             NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getSpeciesCountByGroup(_getPlaceName(2))
-            .then((data) => {
-                _handleSuccess(2, data)
-            })
-            .catch(e =>{
-                _handleError(2,e)
-            })
+                .then((data) => {
+                    _handleSuccess(2, data)
+                })
+                .catch(e => {
+                    _handleError(2, e)
+                })
 
         }
 
         function getOccurrenceCount() {
             _start(3);
             NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getOccurrenceCount(_getPlaceName(3))
-            .then((data) => {
-                _handleSuccess(3, data)
-            })
-            .catch(e =>{
-                _handleError(3,e)
-            })
-          
+                .then((data) => {
+                    _handleSuccess(3, data)
+                })
+                .catch(e => {
+                    _handleError(3, e)
+                })
+
         }
 
-        function _getPlaceName(testNo){
-            return document.getElementById('place'+testNo).value;
+        function _getPlaceName(testNo) {
+            return document.getElementById('place' + testNo).value;
         }
 
-        function _start(testNo){
-            document.getElementById('result'+testNo).innerHTML='Loading (may be slow) .....';
+        function _start(testNo) {
+            document.getElementById('result' + testNo).innerHTML = 'Loading (may be slow) .....';
         }
 
-        function _handleSuccess(testNo, data){
-           document.getElementById('result'+testNo).innerHTML=JSON.stringify(data);
+        function _handleSuccess(testNo, data) {
+            document.getElementById('result' + testNo).innerHTML = JSON.stringify(data);
         }
 
-        function _handleError(testNo, e){
-            let msg = e.message.indexOf('aborted a request.')>-1 ? 'Web service is not responding. Try again.' : e.message;
+        function _handleError(testNo, e) {
+            let msg = e.message.indexOf('aborted a request.') > -1 ? 'Web service is not responding. Try again.' : e.message;
             console.error(e);
-            document.getElementById('result'+testNo).innerHTML='ERROR '+msg;
+            document.getElementById('result' + testNo).innerHTML = 'ERROR ' + msg;
         }
     </script>
-
-    <style>
-        .row {
-  display: flex;
-  margin-bottom:1rem;
-}
-
-.col {
-  flex: 50%;
-  overflow-y: auto; 
-}
-
-
-pre{margin-bottom: 5px; overflow:auto}
-
-.warn {color:#c00; font-weight: bold;}
-
-input[type=text]{
-    width:350px
-}
-    </style>
-</head>
-
-<body>
-     <div class="row">
-        <div class="col">
-        <h3>NBNAtlas.places(${layerId}).getOccurrenceCountForSpeciesList( ${placeName}, ${speciesListId} )</h3>
-        BBG: This function call will give you the data for the <span style="color:forestgreen"><strong>seek advice table</strong></span>
-    
-        <h3>Test:</h3>
-        Place Name <input type="text" id="place1" value="Croydon Cemetery" /> <input type = "button" onclick = "getOccurrenceCountForSpeciesList()" value = "Go" />                
-     
-    <h3>Example Code:</h3>        
-    
-    <a href="https://cdn.nbnatlas.org/docs/NBNAtlas.places.html" target="_blank">SDK Documentation</a>
-
-    <pre><code>
-    &lt;script src="https://cdn.nbnatlas.org/dist/nbnatlas-sdk.js"&gt;&lt;/script&gt;
-
-    NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
-    .getOccurrenceCount("Old Windsor: St Peter & St Andrew")
-    .then(data=> 
-        console.log(JSON.stringify(data)) 
-    )
-</code>
-</pre>
-</div>
-<div class="col" id="result1">
-
-</div>
-    </div> 
-
-    <div class="row" style="background-color: floralwhite; border-top:1px solid black;">
-        <div class="col">
-        <h3>NBNAtlas.places(${layerId}.getSpeciesCountByGroup( ${placeName}, ${speciesListId} )</h3>
-        BBG: This function call will give you the data for the <span style="color:forestgreen"><strong>digest table</strong></span> 
-         
-        <h3>Test:</h3>
-        Place Name <input type="text" id="place2" value="Abbots Leigh: Holy Trinity" /> <input type = "button" onclick = "getSpeciesCountByGroup()" value = "Go" />
-        
-        <h3>Example Code: </h3> 
-
-        <a href="https://cdn.nbnatlas.org/docs/NBNAtlas.places.html" target="_blank">SDK Documentation</a> 
-            <pre><code>
-        &lt;script src="https://cdn.nbnatlas.org/dist/nbnatlas-sdk.js"&gt;&lt;/script&gt;
-    
-        NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
-        .getSpeciesCountByGroup("Croydon Cemetery")
-        .then(data=> 
-            console.log(JSON.stringify(data)) 
-        )
-    </code></pre>
-    
-</div>
-    <div class="col" id="result2">
-
-    </div>
-        </div> 
-
-        <div class="row">
-            <div class="col">
-            <h3>NBNAtlas.places(${layerId}).getOccurrenceCount( ${placeName} )</h3>
-            BBG: This function call will give you the data for the <span style="color:forestgreen"><strong>seek advice table</strong></span>
-        
-            <h3>Test:</h3>
-            Place Name <input type="text" id="place3" value="Croydon Cemetery" /> <input type = "button" onclick = "getOccurrenceCount()" value = "Go" />                
-         
-        <h3>Example Code:</h3>        
-        
-        <a href="https://cdn.nbnatlas.org/docs/NBNAtlas.places.html" target="_blank">SDK Documentation</a>
-    
-        <pre><code>
-        &lt;script src="https://cdn.nbnatlas.org/dist/nbnatlas-sdk.js"&gt;&lt;/script&gt;
-    
-        NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
-        .getOccurrenceCount("Old Windsor: St Peter & St Andrew")
-        .then(data=> 
-            console.log(JSON.stringify(data)) 
-        )
-    </code>
-    </pre>
-    </div>
-    <div class="col" id="result3">
-
-    </div>
-        </div> 
-    
 </body>
 
 </html>
