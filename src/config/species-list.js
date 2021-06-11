@@ -1,0 +1,14 @@
+/** 
+ * Species List ID's
+ * @memberof NBNAtlas
+ * @property {string} BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE
+ * @property {string} BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE
+ * @property {string} SENSITIVE_IN_ENGLAND
+ * @property {string} SENSITIVE_IN_WALES
+*/
+export const SPECIES_LIST = {
+    BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE: "dr2504",
+    BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE: "dr2492",
+    SENSITIVE_IN_ENGLAND: "dr2058",
+    SENSITIVE_IN_WALES: "dr2067"
+}
