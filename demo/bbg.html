@@ -113,6 +113,31 @@ NBNAtlas.bbg.getSeekAdviceData("Croydon Cemetery");
 
                     <div class="demo-row" style="background-color: floralwhite; border-top:1px solid black;">
                         <div class="demo-col">
+                            <h3>Method <span style="color:red;background-color:yellow">NEW</span></h3>
+                            <p>NBNAtlas.bbg.getSeekAdviceDataForAssetID( ${assetID})</p>
+
+                            <h3>Test</h3>
+                            AssetID <input type="text" id="assetID4" value="615214" /> <input type="button"
+                                                                                                         onclick="getSeekAdviceDataForAssetID()" value="Go" />
+
+                            <h3>Example Code</h3>
+
+                            <pre><code>
+&lt;script src="https://cdn.nbnatlas.org/sdk/dist/nbnatlas-sdk.js"&gt;&lt;/script&gt;
+NBNAtlas.bbg.getSeekAdviceDataForAssetID("615214");
+    </code></pre>
+
+
+                            <a href="../docs/NBNAtlas.BBG.html">SDK Documentation</a>
+
+                        </div>
+                        <div class="demo-col" id="result4">
+
+                        </div>
+                    </div>
+
+                    <div class="demo-row" >
+                        <div class="demo-col">
                             <h3>Method</h3>
                             <p>NBNAtlas.bbg.getDigestTableData( ${placeName} )</p>
 
@@ -131,6 +156,30 @@ NBNAtlas.bbg.getDigestTableData("Abbots Leigh: Holy Trinity");
 
                         </div>
                         <div class="demo-col" id="result2">
+
+                        </div>
+                    </div>
+
+                    <div class="demo-row" style="background-color: floralwhite; border-top:1px solid black;">
+                        <div class="demo-col">
+                            <h3>Method <span style="color:red;background-color:yellow">NEW</span></h3>
+                            <p>NBNAtlas.bbg.getDigestTableDataForAssetID( ${assetID} )</p>
+
+                            <h3>Test</h3>
+                            Place Name <input type="text" id="assetID5" value="615214" /> <input
+                                type="button" onclick="getDigestTableDataForAssetID()" value="Go" />
+
+                            <h3>Example Code</h3>
+                            <pre><code>
+&lt;script src="https://cdn.nbnatlas.org/sdk/dist/nbnatlas-sdk.js"&gt;&lt;/script&gt;
+NBNAtlas.bbg.getDigestTableDataForAssetID("615214");
+        </code></pre>
+
+                            <a href="../docs/NBNAtlas.BBG.html">SDK Documentation</a>
+
+
+                        </div>
+                        <div class="demo-col" id="result5">
 
                         </div>
                     </div>
@@ -188,6 +237,7 @@ NBNAtlas.bbg.getPlace("Baildon: St James");
                 })
         }
 
+
         function getDigestTableData() {
             _start(2);
             NBNAtlas.bbg.getDigestTableData(_getPlaceName(2))
@@ -211,12 +261,38 @@ NBNAtlas.bbg.getPlace("Baildon: St James");
                 })
         }
 
+        function getSeekAdviceDataForAssetID() {
+            _start(4);
+            NBNAtlas.bbg.getSeekAdviceDataForAssetID(_getAssetID(4))
+                .then((data) => {
+                    _handleSuccess(4, data)
+                })
+                .catch(e => {
+                    _handleError(4, e)
+                })
+        }
+
+        function getDigestTableDataForAssetID() {
+            _start(5);
+            NBNAtlas.bbg.getDigestTableDataForAssetID(_getAssetID(5))
+                .then((data) => {
+                    _handleSuccess(5, data)
+                })
+                .catch(e => {
+                    _handleError(5, e)
+                })
+        }
+
         function _getPlaceName(testNo) {
             return document.getElementById('place' + testNo).value;
         }
 
+        function _getAssetID(testNo) {
+            return document.getElementById('assetID' + testNo).value;
+        }
+
         function _start(testNo) {
-            document.getElementById('result' + testNo).innerHTML = 'Loading (may be slow) .....';
+            document.getElementById('result' + testNo).innerHTML = 'Loading .....';
         }
 
         function _handleSuccess(testNo, data) {

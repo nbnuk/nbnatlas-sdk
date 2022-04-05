@@ -1,8 +1,7 @@
-import { RecordsWS } from '../services/records-ws'
-import { ListsWS } from '../services/lists-ws'
-import {rejectInvalidRequest, ERROR_MESSAGES} from '../validation/index'
-import {getJson} from '../util/index'
-import {CONFIG, SPECIES_LIST} from '../config/index'
+import { RecordsWS } from '../services/records-ws.js'
+import { ListsWS } from '../services/lists-ws.js'
+import {rejectInvalidRequest, ERROR_MESSAGES} from '../validation/index.js'
+import {SPECIES_LIST} from '../config/index.js'
 
 /**
  * @classdesc Represents the NBN Places SDK. In Beta!!
@@ -90,7 +89,7 @@ import {CONFIG, SPECIES_LIST} from '../config/index'
 
         let result = [];
         const occurrenceCountDTO = await this.recordsWS.getOccurrenceCountForSpeciesList({layerId:this.layerId, placeName, speciesListId});
-     
+     alert(JSON.stringify(occurrenceCountDTO))
         if (occurrenceCountDTO) {
             const sensitiveInWalesDTO = await this.listsWS.getSpeciesList(SPECIES_LIST.SENSITIVE_IN_WALES);
             const sensitiveInEnglandDTO = await this.listsWS.getSpeciesList(SPECIES_LIST.SENSITIVE_IN_ENGLAND);

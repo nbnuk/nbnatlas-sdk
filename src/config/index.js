@@ -1,3 +1,3 @@
-export * from './config'
-export * from './layers'
-export * from './species-list'
+export * from './config.js'
+export * from './layers.js'
+export * from './species-list.js'

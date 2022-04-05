@@ -1,9 +1,7 @@
 import sinon from 'sinon';
 import { expect, assert } from 'chai'
-import { SPECIES_LIST } from '../../src/config/index'
-import { Places } from '../../src/core/places'
-import {ERROR_MESSAGES} from '../../src/validation/index'
-// import {getJson} from '../../src/util/index' 
+import { Places } from '../../src/core/places.js'
+import {ERROR_MESSAGES} from '../../src/validation/index.js'
 
 
 let places;
