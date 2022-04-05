@@ -1,7 +1,7 @@
-import { SpeciesWS } from '../services/species-ws'
-import { rejectInvalidRequest, ERROR_MESSAGES } from '../validation/index'
-import { SPECIES_LIST, LAYERS } from '../../src/config/index'
-import { Places } from './places'
+import { SpeciesWS } from '../services/species-ws.js'
+import { rejectInvalidRequest, ERROR_MESSAGES } from '../validation/index.js'
+import { SPECIES_LIST, LAYERS } from '../config/index.js'
+import { Places } from './places.js'
 
 /**
  * @classdesc Represents the Beautiful Burial Grounds SDK.
@@ -29,6 +29,29 @@ export class BBG {
     }
 
     /**
+     * @description Returns the seek advice data.
+     * @async
+     * @example
+     * NBNAtlas.bbg.getSeekAdviceDataForAssetID('615214')
+     *
+     * @param {string} assetID
+     * @return {Promise<Array<NBNAtlas.OccurrenceCount>>}
+     *
+     */
+    async getSeekAdviceDataForAssetID(assetID) {
+        if (!assetID) {
+            return rejectInvalidRequest(ERROR_MESSAGES.MISSING_ASSET_ID);
+        }
+        let asset = await this.speciesWS.getBBGPlacesForAssetID(assetID);console.log(asset);
+        let counts = await this.places.getOccurrenceCountForSpeciesList(asset.places, SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE);
+        return {
+            assetID:(await asset).assetID,
+            assetName:(await asset).assetName,
+            counts:counts
+        }
+    }
+
+    /**
      * @description Returns the digest table data.
      * @async
      * @example
@@ -39,6 +62,29 @@ export class BBG {
     */
     async getDigestTableData(placeName) {
         return this.places.getSpeciesCountByGroup(placeName, SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE)
+    }
+
+    /**
+     * @description Returns the digest table data.
+     * @async
+     * @example
+     * NBNAtlas.bbg.getDigestTableDataForAssetID('615214')
+     *
+     * @param {string} assetID
+     * @return {Promise<Array<NBNAtlas.SpeciesCountByGroup>>}
+     */
+    async getDigestTableDataForAssetID(assetID) {
+        if (!assetID) {
+            return rejectInvalidRequest(ERROR_MESSAGES.MISSING_ASSET_ID);
+        }
+        let asset = await this.speciesWS.getBBGPlacesForAssetID(assetID);
+        let counts = await this.places.getSpeciesCountByGroup(asset.places, SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE)
+        return {
+            assetID:(await asset).assetID,
+            assetName:(await asset).assetName,
+            counts:counts
+        }
+
     }
 
     /**
