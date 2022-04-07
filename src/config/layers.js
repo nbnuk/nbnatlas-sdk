@@ -24,6 +24,7 @@ export const LAYERS = {
  * @property {string} scientificName
  * @property {string} commonName
  * @property {string} taxonGuid
+ * @property {number} lastRecorded - year of most recent occurrence record, 0 if not known
  * @property {number} count
  * @property {boolean} sensitiveInEngland - true if species is sensitive in England
  * @property {boolean} sensitiveInWales - true if species is sensitive in Wales

@@ -11,7 +11,7 @@ describe('places', function () {
         places = new Places("LAYER_ID");
     });
 
-    describe('getSpeciesCountByGroup(placeName)', function () {
+    describe('getSpeciesCountByGroup(placeNames)', function () {
 
         context('without arguments', function () {
             it('should reject with MISSING_PLACE_NAME', async function () {
@@ -26,12 +26,12 @@ describe('places', function () {
             })
         })
 
-        context('with placeName argument and no species list id argument', function () {
+        context('with placeNames argument and no species list id argument', function () {
             it('should build result with empty selected species count', async function () {
                 const recordsWS_getSpeciesCountByGroupStub = sinon.stub(places.recordsWS, "getSpeciesCountByGroup").returns([1]);
                 const places_buildSpeciesCountByGroupResultStub = sinon.stub(places, "_buildSpeciesCountByGroupResult");
                 
-                await places.getSpeciesCountByGroup("place");
+                await places.getSpeciesCountByGroup(["place"]);
                 
                 assert(recordsWS_getSpeciesCountByGroupStub.calledOnce);
                 assert(recordsWS_getSpeciesCountByGroupStub.calledWith, sinon.match({ layerId: 'LAYTER_ID',  placeName:'place'}));
@@ -49,7 +49,7 @@ describe('places', function () {
                 const recordsWS_getSpeciesCountByGroupForSpeciesListStub = sinon.stub(places.recordsWS, "getSpeciesCountByGroupForSpeciesList").returns([2]);
                 const places_buildSpeciesCountByGroupResultStub = sinon.stub(places, "_buildSpeciesCountByGroupResult");
                 
-                await places.getSpeciesCountByGroup("place", "SPECIES_LIST_ID");
+                await places.getSpeciesCountByGroup(["place"], "SPECIES_LIST_ID");
                 
                 assert(recordsWS_getSpeciesCountByGroupStub.calledOnce);
                 assert(recordsWS_getSpeciesCountByGroupStub.calledWith, sinon.match({ layerId: 'LAYTER_ID',  placeName:'place'}));

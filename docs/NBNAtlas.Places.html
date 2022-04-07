@@ -218,7 +218,7 @@
 
     
 
-    <h4 class="name" id="getOccurrenceCount"><span class="type-signature">(async) </span>getOccurrenceCount<span class="signature">(placeName)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;NBNAtlas.typedefs.OccurrenceCount>>}</span></h4>
+    <h4 class="name" id="getOccurrenceCount"><span class="type-signature">(async) </span>getOccurrenceCount<span class="signature">(placeNames)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;NBNAtlas.typedefs.OccurrenceCount>>}</span></h4>
 
     
 
@@ -278,7 +278,10 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getOccurrenceCount('Argyll Biological Records Centre')</code></pre>
+    <pre class="prettyprint"><code>NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getOccurrenceCount(['Argyll Biological Records Centre'])
+.then(data=>
+  console.log(JSON.stringify(data))
+ );</code></pre>
 
 
 
@@ -308,13 +311,13 @@
 
         <tr>
             
-                <td class="name"><code>placeName</code></td>
+                <td class="name"><code>placeNames</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">Array.&lt;string></span>
 
 
             
@@ -324,7 +327,7 @@
 
             
 
-            <td class="description last"><p>The unique name of the place.</p></td>
+            <td class="description last"><p>Array of place names.</p></td>
         </tr>
 
     
@@ -372,7 +375,7 @@
 
     
 
-    <h4 class="name" id="getOccurrenceCountForSpeciesList"><span class="type-signature">(async) </span>getOccurrenceCountForSpeciesList<span class="signature">(placeName, speciesListId)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;NBNAtlas.typedefs.OccurrenceCount>>}</span></h4>
+    <h4 class="name" id="getOccurrenceCountForSpeciesList"><span class="type-signature">(async) </span>getOccurrenceCountForSpeciesList<span class="signature">(placeNames, speciesListId)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;NBNAtlas.typedefs.OccurrenceCount>>}</span></h4>
 
     
 
@@ -432,7 +435,12 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getOccurrenceCount('Argyll Biological Records Centre')</code></pre>
+    <pre class="prettyprint"><code>NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
+                 .getOccurrenceCountForSpeciesList(['Argyll Biological Records Centre'],
+                                                    NBNAtlas.SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE)
+.then(data=>
+  console.log(JSON.stringify(data))
+ );</code></pre>
 
 
 
@@ -462,13 +470,13 @@
 
         <tr>
             
-                <td class="name"><code>placeName</code></td>
+                <td class="name"><code>placeNames</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">Array.&lt;string></span>
 
 
             
@@ -478,7 +486,7 @@
 
             
 
-            <td class="description last"><p>The unique name of the place.</p></td>
+            <td class="description last"><p>Array of place names.</p></td>
         </tr>
 
     
@@ -549,7 +557,7 @@
 
     
 
-    <h4 class="name" id="getSpeciesCountByGroup"><span class="type-signature">(async) </span>getSpeciesCountByGroup<span class="signature">(placeName, selectedspeciesListId<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;NBNAtlas.typedefs.SpeciesCountByGroup>>}</span></h4>
+    <h4 class="name" id="getSpeciesCountByGroup"><span class="type-signature">(async) </span>getSpeciesCountByGroup<span class="signature">(placeNames, selectedspeciesListId<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;NBNAtlas.typedefs.SpeciesCountByGroup>>}</span></h4>
 
     
 
@@ -609,7 +617,12 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getSpeciesCountByGroup('Croydon Cemetery', NBNAtlas.SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE)</code></pre>
+    <pre class="prettyprint"><code>NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
+                 .getSpeciesCountByGroup(['Croydon Cemetery'],
+                                         NBNAtlas.SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE)
+.then(data=>
+  console.log(JSON.stringify(data))
+ );</code></pre>
 
 
 
@@ -641,13 +654,13 @@
 
         <tr>
             
-                <td class="name"><code>placeName</code></td>
+                <td class="name"><code>placeNames</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">Array.&lt;string></span>
 
 
             
@@ -665,7 +678,7 @@
 
             
 
-            <td class="description last"><p>The unique name of the place</p></td>
+            <td class="description last"><p>Array of place names.</p></td>
         </tr>
 
     
@@ -761,7 +774,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Tue Apr 05 2022 12:49:58 GMT+0100 (British Summer Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Thu Apr 07 2022 09:19:49 GMT+0100 (British Summer Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>

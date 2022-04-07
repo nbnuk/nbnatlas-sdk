@@ -19,13 +19,19 @@ export class BBG {
      * @async
      * @example
      * NBNAtlas.bbg.getSeekAdviceData('Croydon Cemetery')
+     * .then(data=>
+     *   console.log(JSON.stringify(data))
+     *  );
      * 
      * @param {string} placeName - The unique name of the place
      * @return {Promise<Array<NBNAtlas.OccurrenceCount>>}
      *   
      */
     async getSeekAdviceData(placeName) {
-        return this.places.getOccurrenceCountForSpeciesList(placeName, SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE)
+        if (!placeName) {
+            return rejectInvalidRequest(ERROR_MESSAGES.MISSING_PLACE_NAME);
+        }
+        return this.places.getOccurrenceCountForSpeciesList([placeName], SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE)
     }
 
     /**
@@ -33,6 +39,9 @@ export class BBG {
      * @async
      * @example
      * NBNAtlas.bbg.getSeekAdviceDataForAssetID('615214')
+     * .then(data=>
+     *   console.log(JSON.stringify(data))
+     * );
      *
      * @param {string} assetID
      * @return {Promise<Array<NBNAtlas.OccurrenceCount>>}
@@ -42,13 +51,8 @@ export class BBG {
         if (!assetID) {
             return rejectInvalidRequest(ERROR_MESSAGES.MISSING_ASSET_ID);
         }
-        let asset = await this.speciesWS.getBBGPlacesForAssetID(assetID);console.log(asset);
-        let counts = await this.places.getOccurrenceCountForSpeciesList(asset.places, SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE);
-        return {
-            assetID:(await asset).assetID,
-            assetName:(await asset).assetName,
-            counts:counts
-        }
+        let asset = await this.speciesWS.getBBGPlacesForAssetID(assetID);
+        return this.places.getOccurrenceCountForSpeciesList(asset.places, SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE);
     }
 
     /**
@@ -56,12 +60,18 @@ export class BBG {
      * @async
      * @example
      * NBNAtlas.bbg.getDigestTableData('Croydon Cemetery')
+     * .then(data=>
+     *   console.log(JSON.stringify(data))
+     *  );
      *
      * @param {string} placeName - The unique name of the place
      * @return {Promise<Array<NBNAtlas.SpeciesCountByGroup>>}
     */
     async getDigestTableData(placeName) {
-        return this.places.getSpeciesCountByGroup(placeName, SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE)
+        if (!placeName) {
+            return rejectInvalidRequest(ERROR_MESSAGES.MISSING_PLACE_NAME);
+        }
+        return this.places.getSpeciesCountByGroup([placeName], SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE)
     }
 
     /**
@@ -69,6 +79,9 @@ export class BBG {
      * @async
      * @example
      * NBNAtlas.bbg.getDigestTableDataForAssetID('615214')
+     * .then(data=>
+     *   console.log(JSON.stringify(data))
+     *  );
      *
      * @param {string} assetID
      * @return {Promise<Array<NBNAtlas.SpeciesCountByGroup>>}
@@ -78,13 +91,7 @@ export class BBG {
             return rejectInvalidRequest(ERROR_MESSAGES.MISSING_ASSET_ID);
         }
         let asset = await this.speciesWS.getBBGPlacesForAssetID(assetID);
-        let counts = await this.places.getSpeciesCountByGroup(asset.places, SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE)
-        return {
-            assetID:(await asset).assetID,
-            assetName:(await asset).assetName,
-            counts:counts
-        }
-
+        return this.places.getSpeciesCountByGroup(asset.places, SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE)
     }
 
     /**
@@ -92,6 +99,9 @@ export class BBG {
      * @async
      * @example
      * NBNAtlas.bbg.getPlace('Baildon: St James')
+     * .then(data=>
+     *   console.log(JSON.stringify(data))
+     *  );
      *
      * @param {string} placeName - The unique name of the place
      * @return {Promise<NBNAtlas.BBGPlace>}
@@ -100,9 +110,8 @@ export class BBG {
         if (!placeName) {
             return rejectInvalidRequest(ERROR_MESSAGES.MISSING_PLACE_NAME);
         }
-        return await this.speciesWS.getBBGPlace(placeName);
+        return this.speciesWS.getBBGPlace(placeName);
     }
-
 
 }
 

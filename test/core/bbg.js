@@ -58,7 +58,7 @@ describe('bbg', function () {
             it('should call correct web service', async function () {
                 const stub = sinon.stub(bbg.places, "getSpeciesCountByGroup");
                 await bbg.getDigestTableData("place");
-                sinon.assert.calledWith(stub,"place", SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE);
+                sinon.assert.calledWith(stub,["place"], SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE);
                 stub.restore();       
             })
         })
@@ -116,7 +116,7 @@ describe('bbg', function () {
             it('should call correct web service', async function () {
                 const stub = sinon.stub(bbg.places, "getOccurrenceCountForSpeciesList");
                 await bbg.getSeekAdviceData("place");
-                sinon.assert.calledWith(stub,"place", SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE);               
+                sinon.assert.calledWith(stub,["place"], SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE);
                 stub.restore();       
             })
         })

@@ -89,7 +89,7 @@
                     <div class="demo-row">
                         <div class="demo-col">
                             <h3>Method</h3>
-                            <p>NBNAtlas.places(${layerId}).getOccurrenceCountForSpeciesList( ${placeName},
+                            <p>NBNAtlas.places(${layerId}).getOccurrenceCountForSpeciesList( [${placeName}],
                                 ${speciesListId} )</p>
                          
 
@@ -105,10 +105,10 @@
 &lt;script src="https://cdn.nbnatlas.org/sdk/dist/nbnatlas-sdk.js"&gt;&lt;/script&gt;
                 
 NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
-.getOccurrenceCount("Old Windsor: St Peter & St Andrew")
-.then(data=> 
-    console.log(JSON.stringify(data)) 
-)
+.getOccurrenceCount(["Old Windsor: St Peter & St Andrew"])
+.then(data=>
+    console.log(JSON.stringify(data))
+);
                 </code>
                 </pre>
                 <a href="../docs/NBNAtlas.places.html">SDK Documentation</a>
@@ -122,7 +122,7 @@ NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
                     <div class="demo-row" style="background-color: floralwhite; border-top:1px solid black;">
                         <div class="demo-col">
                             <h3>Method</h3>
-                            <p>NBNAtlas.places(${layerId}.getSpeciesCountByGroup( ${placeName}, ${speciesListId} )</p>
+                            <p>NBNAtlas.places(${layerId}.getSpeciesCountByGroup( [${placeName}], ${speciesListId} )</p>
                            
 
                             <h3>Test:</h3>
@@ -136,10 +136,10 @@ NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
 &lt;script src="https://cdn.nbnatlas.org/sdk/dist/nbnatlas-sdk.js"&gt;&lt;/script&gt;
                     
 NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
-.getSpeciesCountByGroup("Croydon Cemetery")
+.getSpeciesCountByGroup(["Croydon Cemetery"])
 .then(data=> 
     console.log(JSON.stringify(data)) 
-)
+);
                     </code></pre>
                     <a href="../docs/NBNAtlas.places.html">SDK Documentation</a>
 
@@ -152,7 +152,7 @@ NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
                     <div class="demo-row">
                         <div class="demo-col">
                             <h3>Method</h3>
-                            <p>NBNAtlas.places(${layerId}).getOccurrenceCount( ${placeName} )</p>
+                            <p>NBNAtlas.places(${layerId}).getOccurrenceCount( [${placeName}] )</p>
                             
 
                             <h3>Test:</h3>
@@ -167,10 +167,10 @@ NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
 &lt;script src="https://cdn.nbnatlas.org/sdk/dist/nbnatlas-sdk.js"&gt;&lt;/script&gt;
                     
 NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
-.getOccurrenceCount("Old Windsor: St Peter & St Andrew")
+.getOccurrenceCount(["Old Windsor: St Peter & St Andrew"])
 .then(data=> 
     console.log(JSON.stringify(data)) 
-)
+);
                     </code>
                     </pre>
                     <a href="../docs/NBNAtlas.places.html">SDK Documentation</a>
@@ -204,7 +204,7 @@ NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
 
         function getOccurrenceCountForSpeciesList() {
             _start(1);
-            NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getOccurrenceCountForSpeciesList(_getPlaceName(1), NBNAtlas.SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE)
+            NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getOccurrenceCountForSpeciesList([_getPlaceName(1)], NBNAtlas.SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE)
                 .then((data) => {
                     _handleSuccess(1, data)
                 })
@@ -216,7 +216,7 @@ NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
 
         function getSpeciesCountByGroup() {
             _start(2);
-            NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getSpeciesCountByGroup(_getPlaceName(2))
+            NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getSpeciesCountByGroup([_getPlaceName(2)])
                 .then((data) => {
                     _handleSuccess(2, data)
                 })
@@ -228,7 +228,7 @@ NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
 
         function getOccurrenceCount() {
             _start(3);
-            NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getOccurrenceCount(_getPlaceName(3))
+            NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getOccurrenceCount([_getPlaceName(3)])
                 .then((data) => {
                     _handleSuccess(3, data)
                 })
