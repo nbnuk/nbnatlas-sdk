@@ -32,6 +32,11 @@
         return {};
     }
 
+    function encodeAndJoin(items, separator = " OR "){
+        let encodedItems= items.map(it => encodeURIComponent('"' + it + '"'));
+        return encodedItems.join("OR");
+    }
+
     /**
      * @private
      */
@@ -67,6 +72,7 @@
      * @property {string} scientificName
      * @property {string} commonName
      * @property {string} taxonGuid
+     * @property {number} lastRecorded - year of most recent occurrence record, 0 if not known
      * @property {number} count
      * @property {boolean} sensitiveInEngland - true if species is sensitive in England
      * @property {boolean} sensitiveInWales - true if species is sensitive in Wales
@@ -115,6 +121,12 @@
         }
 
 
+        async getBBGPlacesForAssetID(assetID) {
+            let url = `${CONFIG.URL_SPECIES_WS}/search?fq=idxtype:REGIONFEATURED&fq=assetid_s:${assetID}`;        let json = await this._getJson(url);
+            return this._buildBBGAssetDTO(json);
+        }
+
+
 
         /**
           * @private
@@ -124,10 +136,22 @@
             let result = json.searchResults && json.searchResults.results && json.searchResults.results[0] ?
                 json.searchResults.results[0] : null;
             return result ? {
-                assetID: result.bbg_unique_s,
+                assetID: result.assetid_s,
                 name: result.bbg_name_s
             }
                 : [];
+        }
+
+        _buildBBGAssetDTO(json) {
+            //let result = json.searchResults?.results?.[0];
+            let result = json.searchResults && json.searchResults.results && json.searchResults.results.length>0 ?
+                json.searchResults.results : null;
+            return result ? {
+                    assetID:result[0].assetid_s,
+                    assetName:result[0].name_s,
+                    places:result.map(it=>it.bbg_name_s)
+                }
+                : {};
         }
 
         /**
@@ -150,7 +174,8 @@
      */
      const ERROR_MESSAGES = {
         MISSING_PLACE_NAME: "Missing place name",
-        MISSING_SPECIES_LIST_ID: "Missing species list id"
+        MISSING_SPECIES_LIST_ID: "Missing species list id",
+        MISSING_ASSET_ID: "Missing asset id",
     };
 
     /**
@@ -169,29 +194,69 @@
     class RecordsWS {
 
 
-        async getSpeciesCountByGroup({layerId, placeName}) {
-            let url = `${CONFIG.URL_RECORDS_WS}/explore/groups?q=*:*&fq=${layerId}:${encodeURIComponent('"' + placeName + '"')}&fq=-occurrence_status:absent`;
+        async getSpeciesCountByGroup({layerId, placeNames}) {
+            let url = `${CONFIG.URL_RECORDS_WS}/explore/groups?q=*:*&fq=${layerId}:(${encodeAndJoin(placeNames)})&fq=-occurrence_status:absent`;
             let json = await this._getJson(url);
             return this._buildSpeciesCountByGroupDTO(json);
         }
 
-        async getSpeciesCountByGroupForSpeciesList({layerId, placeName, speciesListId}) {
-            let url = `${CONFIG.URL_RECORDS_WS}/explore/groups?q=*:*&fq=${layerId}:${encodeURIComponent('"' + placeName + '"')}&fq=-occurrence_status:absent`;
+        async getSpeciesCountByGroupForSpeciesList({layerId, placeNames, speciesListId}) {
+            let url = `${CONFIG.URL_RECORDS_WS}/explore/groups?q=*:*&fq=${layerId}:(${encodeAndJoin(placeNames)})&fq=-occurrence_status:absent`;
             url = `${url}&fq=species_list_uid:${speciesListId}`;
             let json = await this._getJson(url);
             return this._buildSpeciesCountByGroupDTO(json);
         }
 
-        async getOccurrenceCount({layerId, placeName}) {
-            const url = `${CONFIG.URL_RECORDS_WS}/occurrences/search?q=${layerId}:${encodeURIComponent('"' + placeName + '"')}&facets=names_and_lsid&pageSize=0&flimit=-1`;
+        async getOccurrenceCount({layerId, placeNames}) {
+            const url = `${CONFIG.URL_RECORDS_WS}/occurrences/search?q=${layerId}:(${encodeAndJoin(placeNames)})&facets=names_and_lsid&pageSize=1&flimit=-1
+                                &fq=-occurrence_status:absent&sort=year&dir=desc&fl=year`;
             const json = await this._getJson(url);
-            return this._buildOccurrenceCountDTO(json)
+            const occurrenceCountDTO = this._buildOccurrenceCountDTO(json);
+            if (occurrenceCountDTO.length) {
+                await this._addLastOccurrenceYear({layerId, placeNames, speciesListId: undefined, occurrenceCountDTO});
+                const batCount = await this._getBatOccurrenceCount({layerId, placeNames});
+                occurrenceCountDTO.push(batCount);
+            }
+
+            return occurrenceCountDTO;
         }
 
-        async getOccurrenceCountForSpeciesList({layerId, placeName, speciesListId}) {
-            const url = `${CONFIG.URL_RECORDS_WS}/occurrences/search?q=${layerId}:${encodeURIComponent('"' + placeName + '"')}&facets=names_and_lsid&pageSize=0&flimit=-1&fq=-occurrence_status:absent&fq=species_list_uid:${speciesListId}`;
-            const json = await this._getJson(url);        
-            return this._buildOccurrenceCountDTO(json)
+        async getOccurrenceCountForSpeciesList({layerId, placeNames, speciesListId}) {
+            const url = `${CONFIG.URL_RECORDS_WS}/occurrences/search?q=${layerId}:(${encodeAndJoin(placeNames)})&facets=names_and_lsid&pageSize=1&flimit=-1
+                            &fq=-occurrence_status:absent&fq=species_list_uid:${speciesListId}&sort=year&dir=desc&fl=year`;
+
+            const json = await this._getJson(url);
+            const occurrenceCountDTO = this._buildOccurrenceCountDTO(json);
+            if (occurrenceCountDTO.length) {
+                await this._addLastOccurrenceYear({layerId, placeNames, speciesListId, occurrenceCountDTO});
+                const batCount = await this._getBatOccurrenceCount({layerId, placeNames});
+                occurrenceCountDTO.push(batCount);
+            }
+
+            return occurrenceCountDTO;
+        }
+
+        async _getBatOccurrenceCount({layerId, placeNames}) {
+            const url =`${CONFIG.URL_RECORDS_WS}/occurrences/search?q=${layerId}:(${encodeAndJoin(placeNames)})&fq=lsid:NHMSYS0000376160
+                            &fq=occurrence_status:present&pageSize=1&sort=year&dir=desc`;
+            const json = await this._getJson(url);
+
+            const occurrenceCountDTO = json.occurrences.length ?  {
+                count:json.totalRecords,
+                year:json.occurrences[0].year,
+                additional: {
+                    scientificName: "Chiroptera",
+                    commonName: "Bat",
+                    taxonGuid: "NHMSYS0020001355"
+                }} : {
+                count:0,
+                year:0,
+                additional: {
+                    scientificName: "Chiroptera",
+                    commonName: "Bat",
+                    taxonGuid: "NHMSYS0020001355"
+                }};
+            return occurrenceCountDTO;
         }
 
         /**
@@ -205,12 +270,14 @@
          * @private
          */
         _buildOccurrenceCountDTO(json) {
-            //let result = json.facetResults?.[0]?.fieldResult?.map(it => {          
-            let result = json.facetResults && json.facetResults[0] && json.facetResults[0].fieldResult ?
+            //let result = json.facetResults?.[0]?.fieldResult?.map(it => {
+            // let year = json.occurrences && json.occurrences[0] && json.occurrences[0].year ? json.occurrences[0].year:0;
+            const result = json.facetResults && json.facetResults[0] && json.facetResults[0].fieldResult ?
                 json.facetResults[0].fieldResult.map(it => {
                     const label = it.label.split('|');
                     return {
                         ...it,
+                        year:0, //this will be calculated later
                         additional: {
                             scientificName: label[0],
                             commonName: label[2],
@@ -220,6 +287,39 @@
                 }) : [];
 
             return result;
+        }
+
+
+        /**
+         * @private
+         */
+        async _addLastOccurrenceYear({layerId, placeNames, speciesListId, occurrenceCountDTO}) {
+           // const totalCount = occurrenceCountDTO.reduce((acc, cur) => acc + cur.count, 0);
+                const taxnConceptGuids = "("+occurrenceCountDTO.map(item => item.additional.taxonGuid).join(' OR ')+")";
+
+                const url = `${CONFIG.URL_RECORDS_WS}/occurrences/search?q=${layerId}:(${encodeAndJoin(placeNames)})&pageSize=20000
+                                &fq=-occurrence_status:absent&fq=taxon_concept_lsid:${taxnConceptGuids}&sort=year&dir=desc&fl=year,taxon_concept_lsid`
+                + (speciesListId ? `&fq=species_list_uid:${speciesListId}` : '');
+
+                const json = await this._getJson(url);
+
+
+                const taxonConcepts = Object.values(json.occurrences.reduce((acc, cur) => {
+                    const { taxonConceptID, year } = cur;
+                    if (!acc[taxonConceptID] || year > acc[taxonConceptID].year) {
+                        acc[taxonConceptID] = { taxonConceptID, year };
+                    }
+                    return acc;
+                }, {}));
+
+
+            occurrenceCountDTO.forEach(item => {
+                const matchingConcept = taxonConcepts.find(concept => concept.taxonConceptID === item.additional.taxonGuid);
+                if (matchingConcept) {
+                    item.year = matchingConcept.year;
+                }
+            });
+            return occurrenceCountDTO;
         }
 
         /** @private */
@@ -269,21 +369,26 @@
          * Returns the species count grouped by species group.
          * @async
          * @example
-         * NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getSpeciesCountByGroup('Croydon Cemetery', NBNAtlas.SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE)
+         * NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
+         *                  .getSpeciesCountByGroup(['Croydon Cemetery'],
+         *                                          NBNAtlas.SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE)
+         * .then(data=>
+         *   console.log(JSON.stringify(data))
+         *  );
          *
-         * @param {string} placeName - The unique name of the place
+         * @param {string[]} placeNames - Array of place names.
          * @param {string} [selectedspeciesListId] - The id of a species list for which a grouped count is also returned.
          * @return {Promise<Array<NBNAtlas.typedefs.SpeciesCountByGroup>>}
          */
-        async getSpeciesCountByGroup(placeName, selectedspeciesListId) {
-            if (!placeName) {
+        async getSpeciesCountByGroup(placeNames, selectedspeciesListId) {
+            if (!placeNames || !placeNames.length) {
                 return rejectInvalidRequest(ERROR_MESSAGES.MISSING_PLACE_NAME);
             }
            
-            const speciesCountByGroupDTO = await this.recordsWS.getSpeciesCountByGroup({layerId:this.layerId, placeName});
+            const speciesCountByGroupDTO = await this.recordsWS.getSpeciesCountByGroup({layerId:this.layerId, placeNames});
 
             let selectedSpeciesCountByGroupDTO = selectedspeciesListId ? 
-                await this.recordsWS.getSpeciesCountByGroupForSpeciesList({layerId:this.layerId, placeName, speciesListId:selectedspeciesListId}) : [];
+                await this.recordsWS.getSpeciesCountByGroupForSpeciesList({layerId:this.layerId, placeNames, speciesListId:selectedspeciesListId}) : [];
           
             return this._buildSpeciesCountByGroupResult(speciesCountByGroupDTO, selectedSpeciesCountByGroupDTO);
         }
@@ -291,18 +396,21 @@
         /**
          * Returns the occurrence counts.
          * @example
-         * NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getOccurrenceCount('Argyll Biological Records Centre')
+         * NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getOccurrenceCount(['Argyll Biological Records Centre'])
+         * .then(data=>
+         *   console.log(JSON.stringify(data))
+         *  );
          *
-         * @param {string} placeName - The unique name of the place.
+         * @param {string[]} placeNames - Array of place names.
          * @return {Promise<Array<NBNAtlas.typedefs.OccurrenceCount>>}
          */
-        async getOccurrenceCount(placeName) {
-            if (!placeName) {
+        async getOccurrenceCount(placeNames) {
+            if (!placeNames) {
                 return rejectInvalidRequest(ERROR_MESSAGES.MISSING_PLACE_NAME);
             }
             
             let result = [];
-            const occurrenceCountDTO = await this.recordsWS.getOccurrenceCount({layerId:this.layerId, placeName});
+            const occurrenceCountDTO = await this.recordsWS.getOccurrenceCount({layerId:this.layerId, placeNames});
             if (occurrenceCountDTO) {
                 const sensitiveInWalesDTO = await this.listsWS.getSpeciesList(SPECIES_LIST.SENSITIVE_IN_WALES);
                 const sensitiveInEnglandDTO = await this.listsWS.getSpeciesList(SPECIES_LIST.SENSITIVE_IN_ENGLAND);
@@ -313,19 +421,23 @@
             return result;
         }
 
-
         /**
         * Returns the occurrence counts for a species list.
         * @async
         * @example
-        * NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getOccurrenceCount('Argyll Biological Records Centre')
-        *
-        * @param {string} placeName - The unique name of the place.
+        * NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
+         *                  .getOccurrenceCountForSpeciesList(['Argyll Biological Records Centre'],
+         *                                                     NBNAtlas.SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE)
+         * .then(data=>
+         *   console.log(JSON.stringify(data))
+         *  );
+         *
+         * @param {string[]} placeNames - Array of place names.
         * @param {string} speciesListId - The species list id.
         * @return {Promise<Array<NBNAtlas.typedefs.OccurrenceCount>>}
         */
-        async getOccurrenceCountForSpeciesList(placeName, speciesListId) {
-            if (!placeName) {
+        async getOccurrenceCountForSpeciesList(placeNames, speciesListId) {
+            if (!placeNames) {
                 return rejectInvalidRequest(ERROR_MESSAGES.MISSING_PLACE_NAME);
             }
             if (!speciesListId) {
@@ -334,9 +446,8 @@
             const speciesListDTO = await this.listsWS.getSpeciesList(speciesListId);
 
             let result = [];
-            const occurrenceCountDTO = await this.recordsWS.getOccurrenceCountForSpeciesList({layerId:this.layerId, placeName, speciesListId});
-         
-            if (occurrenceCountDTO) {
+            const occurrenceCountDTO = await this.recordsWS.getOccurrenceCountForSpeciesList({layerId:this.layerId, placeNames, speciesListId});
+            if (occurrenceCountDTO && occurrenceCountDTO.length) {
                 const sensitiveInWalesDTO = await this.listsWS.getSpeciesList(SPECIES_LIST.SENSITIVE_IN_WALES);
                 const sensitiveInEnglandDTO = await this.listsWS.getSpeciesList(SPECIES_LIST.SENSITIVE_IN_ENGLAND);
 
@@ -400,8 +511,8 @@
                     commonName: it.additional.commonName,
                     taxonGuid: it.additional.taxonGuid,
                     count: it.count,
-                    sensitiveInEngland: england[it.additional.taxonGuid] ? true : false,
-                    sensitiveInWales: wales[it.additional.taxonGuid] ? true : false
+                    sensitiveInEngland: !!england[it.additional.taxonGuid],
+                    sensitiveInWales: !!wales[it.additional.taxonGuid]
                 }
             ));
         }
@@ -410,36 +521,59 @@
          * @private
          */
         _buildOccurrenceCountForSpeciesListResult(speciesListDTO, occurrenceCountDTO, sensitiveInEnglandDTO, sensitiveInWalesDTO) {
-            if (!occurrenceCountDTO) {
+            if (!occurrenceCountDTO || occurrenceCountDTO.length === 0) {
                 return {}
             }
             const england = this._sensitiveSpeciesJSONToMap(sensitiveInEnglandDTO);
             const wales = this._sensitiveSpeciesJSONToMap(sensitiveInWalesDTO);
-            return speciesListDTO.map(it => (
-                {
-                    scientificName: it.scientificName,
-                    commonName: it.commonName,
-                    taxonGuid: it.lsid,
-                    count: this._getOccurrenceCount(it.lsid, occurrenceCountDTO),
-                    sensitiveInEngland: england[it.lsid] ? true : false,
-                    sensitiveInWales: wales[it.lsid] ? true : false
-                }
-            ));
+            const result =  speciesListDTO.map(it => {
+                let countAndLastRecorded = this._getOccurrenceCountAndLastRecorded(it.lsid, occurrenceCountDTO);
+
+                return(
+                    {
+                    scientificName:it.scientificName,
+                    commonName:it.commonName,
+                    taxonGuid:it.lsid,
+                    lastRecorded:countAndLastRecorded.lastRecorded,
+                    count:countAndLastRecorded.count,
+                    sensitiveInEngland:!!england[it.lsid],
+                    sensitiveInWales:!!wales[it.lsid]
+                    }
+                )
+            });
+
+            const batCount = occurrenceCountDTO[occurrenceCountDTO.length-1];
+            if (batCount.additional.scientificName==="Chiroptera"){
+                result.push({
+                    scientificName:batCount.additional.scientificName,
+                    commonName:batCount.additional.commonName,
+                    taxonGuid:batCount.additional.taxonGuid,
+                    lastRecorded:batCount.year,
+                    count:batCount.count,
+                    sensitiveInEngland:true,
+                    sensitiveInWales:false
+                });
+            }
+            return result;
         }
 
         /**
         * @private 
         */
-        _getOccurrenceCount(taxonGuid, occurrenceCountDTO) {
-            let count = 0;
+        _getOccurrenceCountAndLastRecorded(taxonGuid, occurrenceCountDTO) {
+            let result = {count:0,lastRecorded:0};
+
             occurrenceCountDTO.some(it => {
                 if (it.additional.taxonGuid === taxonGuid) {
-                    count = it.count;
+                    result = {
+                        count:it.count,
+                        lastRecorded:it.year
+                    };
                     return true;
                 }
                 return false;
             });
-            return count;
+            return result;
         }
 
         /**
@@ -476,13 +610,40 @@
          * @async
          * @example
          * NBNAtlas.bbg.getSeekAdviceData('Croydon Cemetery')
+         * .then(data=>
+         *   console.log(JSON.stringify(data))
+         *  );
          * 
          * @param {string} placeName - The unique name of the place
          * @return {Promise<Array<NBNAtlas.OccurrenceCount>>}
          *   
          */
         async getSeekAdviceData(placeName) {
-            return this.places.getOccurrenceCountForSpeciesList(placeName, SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE)
+            if (!placeName) {
+                return rejectInvalidRequest(ERROR_MESSAGES.MISSING_PLACE_NAME);
+            }
+            return this.places.getOccurrenceCountForSpeciesList([placeName], SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE)
+        }
+
+        /**
+         * @description Returns the seek advice data.
+         * @async
+         * @example
+         * NBNAtlas.bbg.getSeekAdviceDataForAssetID('615214')
+         * .then(data=>
+         *   console.log(JSON.stringify(data))
+         * );
+         *
+         * @param {string} assetID
+         * @return {Promise<Array<NBNAtlas.OccurrenceCount>>}
+         *
+         */
+        async getSeekAdviceDataForAssetID(assetID) {
+            if (!assetID) {
+                return rejectInvalidRequest(ERROR_MESSAGES.MISSING_ASSET_ID);
+            }
+            let asset = await this.speciesWS.getBBGPlacesForAssetID(assetID);
+            return this.places.getOccurrenceCountForSpeciesList(asset.places, SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE);
         }
 
         /**
@@ -490,12 +651,38 @@
          * @async
          * @example
          * NBNAtlas.bbg.getDigestTableData('Croydon Cemetery')
+         * .then(data=>
+         *   console.log(JSON.stringify(data))
+         *  );
          *
          * @param {string} placeName - The unique name of the place
          * @return {Promise<Array<NBNAtlas.SpeciesCountByGroup>>}
         */
         async getDigestTableData(placeName) {
-            return this.places.getSpeciesCountByGroup(placeName, SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE)
+            if (!placeName) {
+                return rejectInvalidRequest(ERROR_MESSAGES.MISSING_PLACE_NAME);
+            }
+            return this.places.getSpeciesCountByGroup([placeName], SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE)
+        }
+
+        /**
+         * @description Returns the digest table data.
+         * @async
+         * @example
+         * NBNAtlas.bbg.getDigestTableDataForAssetID('615214')
+         * .then(data=>
+         *   console.log(JSON.stringify(data))
+         *  );
+         *
+         * @param {string} assetID
+         * @return {Promise<Array<NBNAtlas.SpeciesCountByGroup>>}
+         */
+        async getDigestTableDataForAssetID(assetID) {
+            if (!assetID) {
+                return rejectInvalidRequest(ERROR_MESSAGES.MISSING_ASSET_ID);
+            }
+            let asset = await this.speciesWS.getBBGPlacesForAssetID(assetID);
+            return this.places.getSpeciesCountByGroup(asset.places, SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_DIGEST_TABLE)
         }
 
         /**
@@ -503,6 +690,9 @@
          * @async
          * @example
          * NBNAtlas.bbg.getPlace('Baildon: St James')
+         * .then(data=>
+         *   console.log(JSON.stringify(data))
+         *  );
          *
          * @param {string} placeName - The unique name of the place
          * @return {Promise<NBNAtlas.BBGPlace>}
@@ -511,9 +701,8 @@
             if (!placeName) {
                 return rejectInvalidRequest(ERROR_MESSAGES.MISSING_PLACE_NAME);
             }
-            return await this.speciesWS.getBBGPlace(placeName);
+            return this.speciesWS.getBBGPlace(placeName);
         }
-
 
     }
 

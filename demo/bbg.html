@@ -8,8 +8,8 @@
     <title>NBN Atlas JS SDK Demo</title>
 
     <!--[if lt IE 9]>
-	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-	<![endif]-->
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
     <link type="text/css" rel="stylesheet" href="../docs/styles/sunlight.default.css">
 
     <link type="text/css" rel="stylesheet" href="../docs/styles/site.simplex.css">
@@ -19,7 +19,7 @@
             display: flex;
             margin-bottom: 2rem;
             padding-bottom: 2rem;
-           
+
         }
 
         .demo-col {
@@ -47,188 +47,281 @@
 
 <body>
 
-    <div class="navbar navbar-default navbar-fixed-top ">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="../index.html">NBN Atlas JS SDK</a>
-                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-            </div>
-            <div class="navbar-collapse collapse" id="topNavigation">
-                <ul class="nav navbar-nav">
+<div class="navbar navbar-default navbar-fixed-top ">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="../index.html">NBN Atlas JS SDK</a>
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="navbar-collapse collapse" id="topNavigation">
+            <ul class="nav navbar-nav">
 
-                    <li class="dropdown">
-                        <a href="index.html" class="dropdown-toggle" data-toggle="dropdown">Demo<b
-                                class="caret"></b></a>
-                        <ul class="dropdown-menu ">
-                            <li><a href="bbg.html">BBG</a></li>
-                            <li><a href="places.html">Places</a></li>
-                        </ul>
-                    </li>
+                <li class="dropdown">
+                    <a href="index.html" class="dropdown-toggle" data-toggle="dropdown">Demo<b
+                            class="caret"></b></a>
+                    <ul class="dropdown-menu ">
+                        <li><a href="bbg.html">BBG</a></li>
+                        <li><a href="places.html">Places</a></li>
+                    </ul>
+                </li>
 
-                </ul>
+            </ul>
 
-
-            </div>
 
         </div>
+
     </div>
+</div>
 
 
-    <div class="container" id="toc-content">
-        <div class="row">
+<div class="container" id="toc-content">
+    <div class="row">
 
 
-            <div>
+        <div>
 
-                <div id="main">
+            <div id="main">
 
-                    <div class="demo-row">
-                        <div class="demo-col">
-                            <h3>Method</h3>
-                            <p>NBNAtlas.bbg.getSeekAdviceData( ${placeName})</p>
+                <div class="demo-row">
+                    <div class="demo-col">
+                        <h3>Method</h3>
+                        <p>NBNAtlas.bbg.getSeekAdviceData( ${placeName})</p>
 
-                            <h3>Test</h3>
-                            Place Name <input type="text" id="place1" value="Croydon Cemetery" /> <input type="button"
-                                onclick="getSeekAdviceData()" value="Go" />
+                        <h3>Test</h3>
+                        Place Name <input type="text" id="place1" value="Croydon Cemetery"/> <input type="button"
+                                                                                                    onclick="getSeekAdviceData()"
+                                                                                                    value="Go"/>
 
-                            <h3>Example Code</h3>
+                        <h3>Example Code</h3>
 
-                            <pre><code>
+                        <pre><code>
 &lt;script src="https://cdn.nbnatlas.org/sdk/dist/nbnatlas-sdk.js"&gt;&lt;/script&gt;
-NBNAtlas.bbg.getSeekAdviceData("Croydon Cemetery");
+NBNAtlas.bbg.getSeekAdviceData("Croydon Cemetery")
+.then(data=>
+    console.log(JSON.stringify(data))
+);
     </code></pre>
 
 
-                            <a href="../docs/NBNAtlas.BBG.html">SDK Documentation</a>
+                        <a href="../docs/NBNAtlas.BBG.html">SDK Documentation</a>
 
-                        </div>
-                        <div class="demo-col" id="result1">
-
-                        </div>
                     </div>
+                    <div class="demo-col" id="result1">
 
-                    <div class="demo-row" style="background-color: floralwhite; border-top:1px solid black;">
-                        <div class="demo-col">
-                            <h3>Method</h3>
-                            <p>NBNAtlas.bbg.getDigestTableData( ${placeName} )</p>
+                    </div>
+                </div>
 
-                            <h3>Test</h3>
-                            Place Name <input type="text" id="place2" value="Abbots Leigh: Holy Trinity" /> <input
-                                type="button" onclick="getDigestTableData()" value="Go" />
+                <div class="demo-row" style="background-color: floralwhite; border-top:1px solid black;">
+                    <div class="demo-col">
+                        <h3>Method <span style="color:red;background-color:yellow">NEW</span></h3>
+                        <p>NBNAtlas.bbg.getSeekAdviceDataForAssetID( ${assetID})</p>
 
-                            <h3>Example Code</h3>
-                            <pre><code>
+                        <h3>Test</h3>
+                        AssetID <input type="text" id="assetID4" value="1124"/> <input type="button"
+                                                                                       onclick="getSeekAdviceDataForAssetID()"
+                                                                                       value="Go"/>
+
+                        <h3>Example Code</h3>
+
+                        <pre><code>
 &lt;script src="https://cdn.nbnatlas.org/sdk/dist/nbnatlas-sdk.js"&gt;&lt;/script&gt;
-NBNAtlas.bbg.getDigestTableData("Abbots Leigh: Holy Trinity");
+NBNAtlas.bbg.getSeekAdviceDataForAssetID("1124")
+.then(data=>
+    console.log(JSON.stringify(data))
+);
+    </code></pre>
+
+
+                        <a href="../docs/NBNAtlas.BBG.html">SDK Documentation</a>
+
+                    </div>
+                    <div class="demo-col" id="result4">
+
+                    </div>
+                </div>
+
+                <div class="demo-row">
+                    <div class="demo-col">
+                        <h3>Method</h3>
+                        <p>NBNAtlas.bbg.getDigestTableData( ${placeName} )</p>
+
+                        <h3>Test</h3>
+                        Place Name <input type="text" id="place2" value="Abbots Leigh: Holy Trinity"/> <input
+                            type="button" onclick="getDigestTableData()" value="Go"/>
+
+                        <h3>Example Code</h3>
+                        <pre><code>
+&lt;script src="https://cdn.nbnatlas.org/sdk/dist/nbnatlas-sdk.js"&gt;&lt;/script&gt;
+NBNAtlas.bbg.getDigestTableData("Abbots Leigh: Holy Trinity")
+.then(data=>
+    console.log(JSON.stringify(data))
+);
         </code></pre>
 
-                            <a href="../docs/NBNAtlas.BBG.html">SDK Documentation</a>
+                        <a href="../docs/NBNAtlas.BBG.html">SDK Documentation</a>
 
 
-                        </div>
-                        <div class="demo-col" id="result2">
-
-                        </div>
                     </div>
+                    <div class="demo-col" id="result2">
 
+                    </div>
+                </div>
 
-                    <div class="demo-row">
-                        <div class="demo-col">
-                            <h3>Method</h3>
-                            <p>NBNAtlas.bbg.getPlace( ${placeName})</p>
+                <div class="demo-row" style="background-color: floralwhite; border-top:1px solid black;">
+                    <div class="demo-col">
+                        <h3>Method <span style="color:red;background-color:yellow">NEW</span></h3>
+                        <p>NBNAtlas.bbg.getDigestTableDataForAssetID( ${assetID} )</p>
 
-                            <h3>Test</h3>
-                            Place Name <input type="text" id="place3" value="Baildon: St James" /> <input type="button"
-                                onclick="getPlace()" value="Go" />
+                        <h3>Test</h3>
+                        Place Name <input type="text" id="assetID5" value="1124"/> <input
+                            type="button" onclick="getDigestTableDataForAssetID()" value="Go"/>
 
-                            <h3>Example Code</h3>
-
-                            <pre><code>
+                        <h3>Example Code</h3>
+                        <pre><code>
 &lt;script src="https://cdn.nbnatlas.org/sdk/dist/nbnatlas-sdk.js"&gt;&lt;/script&gt;
-NBNAtlas.bbg.getPlace("Baildon: St James");
+NBNAtlas.bbg.getDigestTableDataForAssetID("1124")
+.then(data=>
+    console.log(JSON.stringify(data))
+);
+        </code></pre>
+
+                        <a href="../docs/NBNAtlas.BBG.html">SDK Documentation</a>
+
+
+                    </div>
+                    <div class="demo-col" id="result5">
+
+                    </div>
+                </div>
+
+
+                <div class="demo-row">
+                    <div class="demo-col">
+                        <h3>Method</h3>
+                        <p>NBNAtlas.bbg.getPlace( ${placeName})</p>
+
+                        <h3>Test</h3>
+                        Place Name <input type="text" id="place3" value="Baildon: St James"/> <input type="button"
+                                                                                                     onclick="getPlace()"
+                                                                                                     value="Go"/>
+
+                        <h3>Example Code</h3>
+
+                        <pre><code>
+&lt;script src="https://cdn.nbnatlas.org/sdk/dist/nbnatlas-sdk.js"&gt;&lt;/script&gt;
+NBNAtlas.bbg.getPlace("Baildon: St James")
+.then(data=>
+    console.log(JSON.stringify(data))
+);
         </code></pre>
 
 
-                            <a href="../docs/NBNAtlas.BBG.html">SDK Documentation</a>
+                        <a href="../docs/NBNAtlas.BBG.html">SDK Documentation</a>
 
-                        </div>
-                        <div class="demo-col" id="result3">
+                    </div>
+                    <div class="demo-col" id="result3">
 
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 
-
-    <footer>
-
-
-    </footer>
-    <script src="../docs/scripts/docstrap.lib.js"></script>
-    <script src="../docs/scripts/toc.js"></script>
-
-    <script src="../dist/nbnatlas-sdk.js"></script>
-    <script>
-
-        function getSeekAdviceData() {
-            _start(1);
-            NBNAtlas.bbg.getSeekAdviceData(_getPlaceName(1))
-                .then((data) => {
-                    _handleSuccess(1, data)
-                })
-                .catch(e => {
-                    _handleError(1, e)
-                })
-        }
-
-        function getDigestTableData() {
-            _start(2);
-            NBNAtlas.bbg.getDigestTableData(_getPlaceName(2))
-                .then((data) => {
-                    _handleSuccess(2, data)
-                })
-                .catch(e => {
-                    _handleError(2, e)
-                })
-        }
+<footer>
 
 
-        function getPlace() {
-            _start(3);
-            NBNAtlas.bbg.getPlace(_getPlaceName(3))
-                .then((data) => {
-                    _handleSuccess(3, data)
-                })
-                .catch(e => {
-                    _handleError(3, e)
-                })
-        }
+</footer>
+<script src="../docs/scripts/docstrap.lib.js"></script>
+<script src="../docs/scripts/toc.js"></script>
 
-        function _getPlaceName(testNo) {
-            return document.getElementById('place' + testNo).value;
-        }
+<script src="../dist/nbnatlas-sdk.js"></script>
+<script>
 
-        function _start(testNo) {
-            document.getElementById('result' + testNo).innerHTML = 'Loading (may be slow) .....';
-        }
+    function getSeekAdviceData() {
+        _start(1);
+        NBNAtlas.bbg.getSeekAdviceData(_getPlaceName(1))
+            .then((data) => {
+                _handleSuccess(1, data)
+            })
+            .catch(e => {
+                _handleError(1, e)
+            })
+    }
 
-        function _handleSuccess(testNo, data) {
-            document.getElementById('result' + testNo).innerHTML = JSON.stringify(data);
-        }
 
-        function _handleError(testNo, e) {
-            let msg = e.message.indexOf('aborted a request.') > -1 ? 'Web service is not responding. Try again.' : e.message;
-            console.error(e);
-            document.getElementById('result' + testNo).innerHTML = 'ERROR ' + msg;
-        }
-    </script>
+    function getDigestTableData() {
+        _start(2);
+        NBNAtlas.bbg.getDigestTableData(_getPlaceName(2))
+            .then((data) => {
+                _handleSuccess(2, data)
+            })
+            .catch(e => {
+                _handleError(2, e)
+            })
+    }
+
+
+    function getPlace() {
+        _start(3);
+        NBNAtlas.bbg.getPlace(_getPlaceName(3))
+            .then((data) => {
+                _handleSuccess(3, data)
+            })
+            .catch(e => {
+                _handleError(3, e)
+            })
+    }
+
+    function getSeekAdviceDataForAssetID() {
+        _start(4);
+        NBNAtlas.bbg.getSeekAdviceDataForAssetID(_getAssetID(4))
+            .then((data) => {
+                _handleSuccess(4, data)
+            })
+            .catch(e => {
+                _handleError(4, e)
+            })
+    }
+
+    function getDigestTableDataForAssetID() {
+        _start(5);
+        NBNAtlas.bbg.getDigestTableDataForAssetID(_getAssetID(5))
+            .then((data) => {
+                _handleSuccess(5, data)
+            })
+            .catch(e => {
+                _handleError(5, e)
+            })
+    }
+
+    function _getPlaceName(testNo) {
+        return document.getElementById('place' + testNo).value;
+    }
+
+    function _getAssetID(testNo) {
+        return document.getElementById('assetID' + testNo).value;
+    }
+
+    function _start(testNo) {
+        document.getElementById('result' + testNo).innerHTML = 'Loading .....';
+    }
+
+    function _handleSuccess(testNo, data) {
+        document.getElementById('result' + testNo).innerHTML = JSON.stringify(data);
+    }
+
+    function _handleError(testNo, e) {
+        let msg = e.message.indexOf('aborted a request.') > -1 ? 'Web service is not responding. Try again.' : e.message;
+        console.error(e);
+        document.getElementById('result' + testNo).innerHTML = 'ERROR ' + msg;
+    }
+</script>
 </body>
 
 </html>

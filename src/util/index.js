@@ -20,3 +20,8 @@
     }
     return {};
 }
+
+export function encodeAndJoin(items, separator = " OR "){
+    let encodedItems= items.map(it => encodeURIComponent('"' + it + '"'));
+    return encodedItems.join("OR");
+}

@@ -1,0 +1,26 @@
+.hljs-ln {
+  margin: 10px 0;
+  border: none;
+}
+.hljs-ln-n {
+  width: 40px;
+  padding-right: 10px;
+}
+
+.hljs-ln-numbers {
+  width: 40px;
+  color: #999;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  text-align: right;
+  border-right: 1px solid #CCC;
+  vertical-align: top;
+  padding: 0 15px;
+}
+
+.hljs-ln-code {
+  padding-left: 15px !important;
+}

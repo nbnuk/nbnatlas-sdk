@@ -1,8 +1,7 @@
-import { RecordsWS } from '../services/records-ws'
-import { ListsWS } from '../services/lists-ws'
-import {rejectInvalidRequest, ERROR_MESSAGES} from '../validation/index'
-import {getJson} from '../util/index'
-import {CONFIG, SPECIES_LIST} from '../config/index'
+import { RecordsWS } from '../services/records-ws.js'
+import { ListsWS } from '../services/lists-ws.js'
+import {rejectInvalidRequest, ERROR_MESSAGES} from '../validation/index.js'
+import {SPECIES_LIST} from '../config/index.js'
 
 /**
  * @classdesc Represents the NBN Places SDK. In Beta!!
@@ -24,21 +23,26 @@ import {CONFIG, SPECIES_LIST} from '../config/index'
      * Returns the species count grouped by species group.
      * @async
      * @example
-     * NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getSpeciesCountByGroup('Croydon Cemetery', NBNAtlas.SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE)
+     * NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
+     *                  .getSpeciesCountByGroup(['Croydon Cemetery'],
+     *                                          NBNAtlas.SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE)
+     * .then(data=>
+     *   console.log(JSON.stringify(data))
+     *  );
      *
-     * @param {string} placeName - The unique name of the place
+     * @param {string[]} placeNames - Array of place names.
      * @param {string} [selectedspeciesListId] - The id of a species list for which a grouped count is also returned.
      * @return {Promise<Array<NBNAtlas.typedefs.SpeciesCountByGroup>>}
      */
-    async getSpeciesCountByGroup(placeName, selectedspeciesListId) {
-        if (!placeName) {
+    async getSpeciesCountByGroup(placeNames, selectedspeciesListId) {
+        if (!placeNames || !placeNames.length) {
             return rejectInvalidRequest(ERROR_MESSAGES.MISSING_PLACE_NAME);
         }
        
-        const speciesCountByGroupDTO = await this.recordsWS.getSpeciesCountByGroup({layerId:this.layerId, placeName});
+        const speciesCountByGroupDTO = await this.recordsWS.getSpeciesCountByGroup({layerId:this.layerId, placeNames});
 
         let selectedSpeciesCountByGroupDTO = selectedspeciesListId ? 
-            await this.recordsWS.getSpeciesCountByGroupForSpeciesList({layerId:this.layerId, placeName, speciesListId:selectedspeciesListId}) : [];
+            await this.recordsWS.getSpeciesCountByGroupForSpeciesList({layerId:this.layerId, placeNames, speciesListId:selectedspeciesListId}) : [];
       
         return this._buildSpeciesCountByGroupResult(speciesCountByGroupDTO, selectedSpeciesCountByGroupDTO);
     }
@@ -46,18 +50,21 @@ import {CONFIG, SPECIES_LIST} from '../config/index'
     /**
      * Returns the occurrence counts.
      * @example
-     * NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getOccurrenceCount('Argyll Biological Records Centre')
+     * NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getOccurrenceCount(['Argyll Biological Records Centre'])
+     * .then(data=>
+     *   console.log(JSON.stringify(data))
+     *  );
      *
-     * @param {string} placeName - The unique name of the place.
+     * @param {string[]} placeNames - Array of place names.
      * @return {Promise<Array<NBNAtlas.typedefs.OccurrenceCount>>}
      */
-    async getOccurrenceCount(placeName) {
-        if (!placeName) {
+    async getOccurrenceCount(placeNames) {
+        if (!placeNames) {
             return rejectInvalidRequest(ERROR_MESSAGES.MISSING_PLACE_NAME);
         }
         
         let result = [];
-        const occurrenceCountDTO = await this.recordsWS.getOccurrenceCount({layerId:this.layerId, placeName});
+        const occurrenceCountDTO = await this.recordsWS.getOccurrenceCount({layerId:this.layerId, placeNames});
         if (occurrenceCountDTO) {
             const sensitiveInWalesDTO = await this.listsWS.getSpeciesList(SPECIES_LIST.SENSITIVE_IN_WALES);
             const sensitiveInEnglandDTO = await this.listsWS.getSpeciesList(SPECIES_LIST.SENSITIVE_IN_ENGLAND);
@@ -68,19 +75,23 @@ import {CONFIG, SPECIES_LIST} from '../config/index'
         return result;
     }
 
-
     /**
     * Returns the occurrence counts for a species list.
     * @async
     * @example
-    * NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS).getOccurrenceCount('Argyll Biological Records Centre')
-    *
-    * @param {string} placeName - The unique name of the place.
+    * NBNAtlas.places(NBNAtlas.LAYERS.BEAUTIFUL_BURIAL_GROUNDS)
+     *                  .getOccurrenceCountForSpeciesList(['Argyll Biological Records Centre'],
+     *                                                     NBNAtlas.SPECIES_LIST.BEAUTIFUL_BURIAL_GROUNDS_SEEK_ADVICE)
+     * .then(data=>
+     *   console.log(JSON.stringify(data))
+     *  );
+     *
+     * @param {string[]} placeNames - Array of place names.
     * @param {string} speciesListId - The species list id.
     * @return {Promise<Array<NBNAtlas.typedefs.OccurrenceCount>>}
     */
-    async getOccurrenceCountForSpeciesList(placeName, speciesListId) {
-        if (!placeName) {
+    async getOccurrenceCountForSpeciesList(placeNames, speciesListId) {
+        if (!placeNames) {
             return rejectInvalidRequest(ERROR_MESSAGES.MISSING_PLACE_NAME);
         }
         if (!speciesListId) {
@@ -89,9 +100,8 @@ import {CONFIG, SPECIES_LIST} from '../config/index'
         const speciesListDTO = await this.listsWS.getSpeciesList(speciesListId);
 
         let result = [];
-        const occurrenceCountDTO = await this.recordsWS.getOccurrenceCountForSpeciesList({layerId:this.layerId, placeName, speciesListId});
-     
-        if (occurrenceCountDTO) {
+        const occurrenceCountDTO = await this.recordsWS.getOccurrenceCountForSpeciesList({layerId:this.layerId, placeNames, speciesListId});
+        if (occurrenceCountDTO && occurrenceCountDTO.length) {
             const sensitiveInWalesDTO = await this.listsWS.getSpeciesList(SPECIES_LIST.SENSITIVE_IN_WALES);
             const sensitiveInEnglandDTO = await this.listsWS.getSpeciesList(SPECIES_LIST.SENSITIVE_IN_ENGLAND);
 
@@ -155,8 +165,8 @@ import {CONFIG, SPECIES_LIST} from '../config/index'
                 commonName: it.additional.commonName,
                 taxonGuid: it.additional.taxonGuid,
                 count: it.count,
-                sensitiveInEngland: england[it.additional.taxonGuid] ? true : false,
-                sensitiveInWales: wales[it.additional.taxonGuid] ? true : false
+                sensitiveInEngland: !!england[it.additional.taxonGuid],
+                sensitiveInWales: !!wales[it.additional.taxonGuid]
             }
         ));
     }
@@ -165,36 +175,59 @@ import {CONFIG, SPECIES_LIST} from '../config/index'
      * @private
      */
     _buildOccurrenceCountForSpeciesListResult(speciesListDTO, occurrenceCountDTO, sensitiveInEnglandDTO, sensitiveInWalesDTO) {
-        if (!occurrenceCountDTO) {
+        if (!occurrenceCountDTO || occurrenceCountDTO.length === 0) {
             return {}
         }
         const england = this._sensitiveSpeciesJSONToMap(sensitiveInEnglandDTO);
         const wales = this._sensitiveSpeciesJSONToMap(sensitiveInWalesDTO);
-        return speciesListDTO.map(it => (
-            {
-                scientificName: it.scientificName,
-                commonName: it.commonName,
-                taxonGuid: it.lsid,
-                count: this._getOccurrenceCount(it.lsid, occurrenceCountDTO),
-                sensitiveInEngland: england[it.lsid] ? true : false,
-                sensitiveInWales: wales[it.lsid] ? true : false
-            }
-        ));
+        const result =  speciesListDTO.map(it => {
+            let countAndLastRecorded = this._getOccurrenceCountAndLastRecorded(it.lsid, occurrenceCountDTO);
+
+            return(
+                {
+                scientificName:it.scientificName,
+                commonName:it.commonName,
+                taxonGuid:it.lsid,
+                lastRecorded:countAndLastRecorded.lastRecorded,
+                count:countAndLastRecorded.count,
+                sensitiveInEngland:!!england[it.lsid],
+                sensitiveInWales:!!wales[it.lsid]
+                }
+            )
+        });
+
+        const batCount = occurrenceCountDTO[occurrenceCountDTO.length-1];
+        if (batCount.additional.scientificName==="Chiroptera"){
+            result.push({
+                scientificName:batCount.additional.scientificName,
+                commonName:batCount.additional.commonName,
+                taxonGuid:batCount.additional.taxonGuid,
+                lastRecorded:batCount.year,
+                count:batCount.count,
+                sensitiveInEngland:true,
+                sensitiveInWales:false
+            })
+        }
+        return result;
     }
 
     /**
     * @private 
     */
-    _getOccurrenceCount(taxonGuid, occurrenceCountDTO) {
-        let count = 0;
+    _getOccurrenceCountAndLastRecorded(taxonGuid, occurrenceCountDTO) {
+        let result = {count:0,lastRecorded:0}
+
         occurrenceCountDTO.some(it => {
             if (it.additional.taxonGuid === taxonGuid) {
-                count = it.count;
+                result = {
+                    count:it.count,
+                    lastRecorded:it.year
+                }
                 return true;
             }
             return false;
         });
-        return count;
+        return result;
     }
 
     /**

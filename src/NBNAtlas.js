@@ -1,3 +1,3 @@
-export * from './core/bbg';
-export * from './core/places';
-export * from './config/index';
+export * from './core/bbg.js';
+export * from './core/places.js';
+export * from './config/index.js';

@@ -1,5 +1,5 @@
-import { getJson } from '../util/index'
-import { CONFIG } from '../config/index'
+import { getJson } from '../util/index.js'
+import { CONFIG } from '../config/index.js'
 
 /**
 * @private
