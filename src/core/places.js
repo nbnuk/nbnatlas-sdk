@@ -101,7 +101,7 @@ import {SPECIES_LIST} from '../config/index.js'
 
         let result = [];
         const occurrenceCountDTO = await this.recordsWS.getOccurrenceCountForSpeciesList({layerId:this.layerId, placeNames, speciesListId});
-        if (occurrenceCountDTO) {
+        if (occurrenceCountDTO && occurrenceCountDTO.length) {
             const sensitiveInWalesDTO = await this.listsWS.getSpeciesList(SPECIES_LIST.SENSITIVE_IN_WALES);
             const sensitiveInEnglandDTO = await this.listsWS.getSpeciesList(SPECIES_LIST.SENSITIVE_IN_ENGLAND);
 
@@ -175,12 +175,12 @@ import {SPECIES_LIST} from '../config/index.js'
      * @private
      */
     _buildOccurrenceCountForSpeciesListResult(speciesListDTO, occurrenceCountDTO, sensitiveInEnglandDTO, sensitiveInWalesDTO) {
-        if (!occurrenceCountDTO) {
+        if (!occurrenceCountDTO || occurrenceCountDTO.length === 0) {
             return {}
         }
         const england = this._sensitiveSpeciesJSONToMap(sensitiveInEnglandDTO);
         const wales = this._sensitiveSpeciesJSONToMap(sensitiveInWalesDTO);
-        return speciesListDTO.map(it => {
+        const result =  speciesListDTO.map(it => {
             let countAndLastRecorded = this._getOccurrenceCountAndLastRecorded(it.lsid, occurrenceCountDTO);
 
             return(
@@ -195,6 +195,20 @@ import {SPECIES_LIST} from '../config/index.js'
                 }
             )
         });
+
+        const batCount = occurrenceCountDTO[occurrenceCountDTO.length-1];
+        if (batCount.additional.scientificName==="Chiroptera"){
+            result.push({
+                scientificName:batCount.additional.scientificName,
+                commonName:batCount.additional.commonName,
+                taxonGuid:batCount.additional.taxonGuid,
+                lastRecorded:batCount.year,
+                count:batCount.count,
+                sensitiveInEngland:true,
+                sensitiveInWales:false
+            })
+        }
+        return result;
     }
 
     /**
